@@ -1,59 +1,58 @@
+# Simple WAF - Version 1.0
+
+This is a simple Web Application Firewall (WAF) written in PHP, designed to block malicious requests based on geolocation, common attack patterns such as XSS and SQL injection, and rate limit requests per IP.
+
+## Requirements
+
+- PHP 7.4 or higher
+- Composer (to install the dependencies)
+- GeoLite2 database for geolocation (available at: https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)
+
+## Installation
+
+1. **Clone the repository or download the files** to your web server.
+
+2. **Install the dependencies** using Composer. Make sure Composer is installed and run the following command in the project root folder:
+```bash
+composer install
 ```
-# Simple WAF - Versión 1.0
 
-Este es un Web Application Firewall (WAF) simple escrito en PHP, diseñado para bloquear solicitudes maliciosas basadas en geolocalización, patrones comunes de ataques como XSS y SQL injection, y limitar la tasa de solicitudes por IP.
+3. **Download the GeoLite2 database**:
+- Create a `db/` folder in the project root.
+- Download the `GeoLite2-Country.mmdb` file from the MaxMind website and place it in the `db/` folder.
 
-## Requisitos
+4. **Make sure that the `waf_log.txt` file has write permissions** so that the system can log blocked requests:
+```bash
+chmod 666 waf_log.txt
+```
 
-- PHP 7.4 o superior
-- Composer (para instalar las dependencias)
-- Base de datos GeoLite2 para la geolocalización (disponible en: https://dev.maxmind.com/geoip/geolite2-free-geolocation-data)
+## Features
 
-## Instalación
+1. **Geolocation protection:**
+The WAF blocks access from specific countries. Currently, the following countries are blocked:
+- Russia (RU)
+- Saudi Arabia (SA)
+- Iran (IR)
+- China (CN)
+- India (IN)
 
-1. **Clona el repositorio o descarga los archivos** en tu servidor web.
+Countries can be added or removed by modifying the `blockedCountries` list in the code.
 
-2. **Instala las dependencias** usando Composer. Asegúrate de que Composer está instalado y ejecuta el siguiente comando en la carpeta raíz del proyecto:
-   ```bash
-   composer install
-   ```
+2. **Dangerous patterns:**
+The WAF inspects requests (GET, POST, COOKIES, REQUEST) for common attack patterns, such as:
+- XSS (Cross-site scripting)
+- SQL injections
+- Script injections
 
-3. **Descarga la base de datos GeoLite2**:
-   - Crea una carpeta `db/` en la raíz del proyecto.
-   - Descarga el archivo `GeoLite2-Country.mmdb` desde el sitio web de MaxMind y colócalo en la carpeta `db/`.
+3. **Rate limiting:**
+The number of requests allowed per IP is limited to 100 per hour. If this limit is exceeded, the IP will be temporarily blocked.
 
-4. **Asegúrate de que el archivo `waf_log.txt` tiene permisos de escritura** para que el sistema pueda registrar las solicitudes bloqueadas:
-   ```bash
-   chmod 666 waf_log.txt
-   ```
+4. **Logging of blocked requests:**
+Each time a request is blocked, it is logged in the `waf_log.txt` file with the IP and the reason for the block.
 
-## Funcionalidades
+## Usage
 
-1. **Protección por geolocalización:**
-   El WAF bloquea accesos provenientes de países específicos. Actualmente, los siguientes países están bloqueados:
-   - Rusia (RU)
-   - Arabia Saudita (SA)
-   - Irán (IR)
-   - China (CN)
-   - India (IN)
-
-   Se pueden agregar o eliminar países modificando la lista `blockedCountries` en el código.
-
-2. **Patrones peligrosos:**
-   El WAF inspecciona las solicitudes (GET, POST, COOKIES, REQUEST) en busca de patrones comunes de ataques, como:
-   - XSS (Cross-site scripting)
-   - Inyecciones SQL
-   - Inyecciones de scripts
-
-3. **Limitación de tasa (Rate limiting):**
-   Se limita el número de solicitudes permitidas por IP a 100 por hora. Si se supera este límite, se bloqueará la IP temporalmente.
-
-4. **Registro de solicitudes bloqueadas:**
-   Cada vez que se bloquea una solicitud, se registra en el archivo `waf_log.txt` con el IP y el motivo del bloqueo.
-
-## Uso
-
-Para proteger tu aplicación con el WAF, simplemente incluye el siguiente código al inicio de tus archivos PHP principales:
+To protect your application with the WAF, simply include the following code at the beginning of your main PHP files:
 
 ```php
 require_once 'SimpleWAF.php';
@@ -61,23 +60,21 @@ $waf = new SimpleWAF();
 $waf->protect();
 ```
 
-Este código verificará las solicitudes y aplicará las medidas de seguridad de acuerdo con las reglas establecidas.
+This code will check requests and apply security measures according to the rules set.
 
-## Personalización
+## Customization
 
-1. **Agregar IPs a la lista blanca (whitelist):**
-   Si deseas que ciertas IPs estén exentas de los bloqueos, puedes agregarlas a la lista `whitelistedIps` en el archivo `SimpleWAF.php`.
+1. **Add IPs to the whitelist:**
+If you want certain IPs to be exempt from blocking, you can add them to the `whitelistedIps` list in the `SimpleWAF.php` file.
 
-2. **Modificar las reglas de geolocalización:**
-   Si deseas cambiar los países bloqueados, simplemente edita la lista `blockedCountries`.
+2. **Modify geolocation rules:**
+If you want to change the blocked countries, simply edit the `blockedCountries` list.
 
-3. **Modificar las reglas de limitación de tasa:**
-   Puedes cambiar el límite de solicitudes y el tiempo de espera modificando las variables `$limit` y `$timeFrame` en el método `rateLimit`.
+3. **Modify rate limit rules:**
+You can change the request limit and timeout by modifying the `$limit` and `$timeFrame` variables in the `rateLimit` method.
 
-## Contacto
+## Contact
 
-Si tienes preguntas o comentarios sobre este proyecto, no dudes en contactarme.
+If you have questions or comments about this project, feel free to contact me.
 
-```
-
-Este archivo proporciona instrucciones claras sobre la instalación, configuración y personalización de tu WAF, lo que lo hace más accesible para futuros usuarios o colaboradores.
+This file provides clear instructions on installing, configuring, and customizing your WAF, making it more accessible to future users or contributors.
